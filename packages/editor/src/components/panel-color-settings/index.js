@@ -15,7 +15,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import ColorPaletteControl from '../color-palette/control';
 import withColorContext from '../color-palette/with-color-context';
-import { getColorName } from '../colors';
+import { getColorObjectByValue } from '../colors';
 
 // translators: first %s: The type of color (e.g. background color), second %s: the color name or value (e.g. red or #ff0000)
 const colorIndicatorAriaLabel = __( '(%s: %s)' );
@@ -25,8 +25,8 @@ const renderColorIndicators = ( colorSettings, colors ) => {
 		if ( ! value ) {
 			return null;
 		}
-
-		const colorName = getColorName( colors, value );
+		const colorObject = getColorObjectByValue( colors, value );
+		const colorName = colorObject && colorObject.name;
 		const ariaLabel = sprintf( colorIndicatorAriaLabel, label.toLowerCase(), colorName || value );
 
 		return (
