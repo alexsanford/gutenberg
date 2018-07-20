@@ -5,9 +5,44 @@
         "isValid": true,
         "attributes": {
             "url": "https://speakerdeck.com/",
-            "caption": [
-                "Embedded content from speakerdeck"
-            ]
+            "caption": {
+                "formats": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                "text": "Embedded content from speakerdeck"
+            }
         },
         "innerBlocks": [],
         "originalContent": "<figure class=\"wp-block-embed-speakerdeck wp-block-embed\">\n\thttps://speakerdeck.com/\n\t<figcaption>Embedded content from speakerdeck</figcaption>\n</figure>"

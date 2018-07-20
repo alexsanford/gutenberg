@@ -19,23 +19,17 @@ import './style.scss';
 import './theme.scss';
 
 const toRichTextValue = ( value ) => map( value, ( ( subValue ) => subValue.children ) );
-const fromRichTextValue = ( value ) => map( value, ( subValue ) => ( {
-	children: subValue,
-} ) );
+
 const blockAttributes = {
 	value: {
-		type: 'array',
-		source: 'query',
-		selector: 'blockquote > p',
-		query: {
-			children: {
-				source: 'node',
-			},
-		},
+		type: 'object',
+		source: 'rich-text',
+		selector: 'blockquote',
+		multiline: 'p',
 	},
 	citation: {
-		type: 'array',
-		source: 'children',
+		type: 'object',
+		source: 'rich-text',
 		selector: 'cite',
 	},
 };
@@ -68,14 +62,14 @@ export const settings = {
 					value={ toRichTextValue( value ) }
 					onChange={
 						( nextValue ) => setAttributes( {
-							value: fromRichTextValue( nextValue ),
+							value: nextValue,
 						} )
 					}
 					/* translators: the text of the quotation */
 					placeholder={ __( 'Write quote…' ) }
 					wrapperClassName="core-blocks-pullquote__content"
 				/>
-				{ ( citation || isSelected ) && (
+				{ ( ! RichText.isEmpty( citation ) || isSelected ) && (
 					<RichText
 						tagName="cite"
 						value={ citation }
@@ -97,8 +91,8 @@ export const settings = {
 
 		return (
 			<blockquote>
-				<RichText.Content value={ toRichTextValue( value ) } />
-				{ citation && citation.length > 0 && <RichText.Content tagName="cite" value={ citation } /> }
+				<RichText.Content value={ value } multiline="p" />
+				{ ! RichText.isEmpty( citation ) && <RichText.Content tagName="cite" value={ citation } /> }
 			</blockquote>
 		);
 	},
@@ -122,8 +116,8 @@ export const settings = {
 
 			return (
 				<blockquote className={ `align${ align }` }>
-					<RichText.Content value={ toRichTextValue( value ) } />
-					{ citation && citation.length > 0 && <RichText.Content tagName="footer" value={ citation } /> }
+					<RichText.Content value={ value } />
+					{ ! RichText.isEmpty( citation ) && <RichText.Content tagName="footer" value={ citation } /> }
 				</blockquote>
 			);
 		},
