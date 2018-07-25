@@ -59,6 +59,7 @@ export class BlockSettingsMenu extends Component {
 			rootClientId,
 			isHidden,
 			onDuplicate,
+			onRemove,
 			canDuplicate,
 			isLocked,
 			shortcuts,
@@ -72,6 +73,7 @@ export class BlockSettingsMenu extends Component {
 			<div className="editor-block-settings-menu">
 				<BlockSettingsKeyboardShortcuts
 					onDuplicate={ onDuplicate }
+					onRemove={ onRemove }
 					shortcuts={ shortcuts }
 				/>
 				<Dropdown
@@ -152,6 +154,8 @@ export class BlockSettingsMenu extends Component {
 							<BlockRemoveButton
 								clientIds={ clientIds }
 								role="menuitem"
+								onRemove={ onRemove }
+								shortcut={ shortcuts.remove.display }
 							/>
 						</NavigableMenu>
 					) }

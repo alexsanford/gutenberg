@@ -16,6 +16,10 @@ const shortcuts = {
 		raw: rawShortcut.primary( 'd' ),
 		display: displayShortcut.primary( 'd' ),
 	},
+	remove: {
+		raw: rawShortcut.primary( 'del' ),
+		display: displayShortcut.primary( 'del' ),
+	},
 };
 
 const withBlockSettingsActions = compose( [
@@ -40,7 +44,7 @@ const withBlockSettingsActions = compose( [
 			shortcuts,
 		};
 	} ),
-	withDispatch( ( dispatch, { blocks, index, isLocked, canDuplicate, rootClientId } ) => ( {
+	withDispatch( ( dispatch, { clientIds, rootClientId, blocks, index, isLocked, canDuplicate } ) => ( {
 		onDuplicate() {
 			if ( isLocked || ! canDuplicate ) {
 				return;
@@ -58,6 +62,9 @@ const withBlockSettingsActions = compose( [
 					last( clonedBlocks ).clientId
 				);
 			}
+		},
+		onRemove() {
+			dispatch( 'core/editor' ).removeBlocks( clientIds );
 		},
 	} ) ),
 ] );

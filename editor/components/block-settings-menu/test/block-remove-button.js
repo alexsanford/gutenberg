@@ -7,7 +7,7 @@ import { noop } from 'lodash';
 /**
  * Internal dependencies
  */
-import { BlockRemoveButton } from '../block-remove-button';
+import BlockRemoveButton from '../block-remove-button';
 
 describe( 'BlockRemoveButton', () => {
 	it( 'matches the snapshot', () => {

@@ -13,12 +13,13 @@ const preventDefault = ( event ) => {
 	return event;
 };
 
-export function BlockSettingsKeyboardShortcuts( { onDuplicate, shortcuts } ) {
+export function BlockSettingsKeyboardShortcuts( { onDuplicate, onRemove, shortcuts } ) {
 	return (
 		<KeyboardShortcuts
 			bindGlobal
 			shortcuts={ {
 				[ shortcuts.duplicate.raw ]: flow( preventDefault, onDuplicate ),
+				[ shortcuts.remove.raw ]: flow( preventDefault, onRemove ),
 			} }
 		/>
 	);

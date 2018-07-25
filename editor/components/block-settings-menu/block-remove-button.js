@@ -1,17 +1,10 @@
 /**
- * External dependencies
- */
-import { castArray, flow, noop, some } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { IconButton } from '@wordpress/components';
-import { compose } from '@wordpress/compose';
-import { withDispatch, withSelect } from '@wordpress/data';
 
-export function BlockRemoveButton( { onRemove, onClick = noop, isLocked, role, ...props } ) {
+export default function BlockRemoveButton( { onRemove, isLocked, role, ...props } ) {
 	if ( isLocked ) {
 		return null;
 	}
@@ -21,7 +14,7 @@ export function BlockRemoveButton( { onRemove, onClick = noop, isLocked, role, .
 	return (
 		<IconButton
 			className="editor-block-settings-menu__control"
-			onClick={ flow( onRemove, onClick ) }
+			onClick={ onRemove }
 			icon="trash"
 			label={ label }
 			role={ role }
@@ -31,25 +24,3 @@ export function BlockRemoveButton( { onRemove, onClick = noop, isLocked, role, .
 		</IconButton>
 	);
 }
-
-export default compose(
-	withDispatch( ( dispatch, { clientIds } ) => ( {
-		onRemove() {
-			dispatch( 'core/editor' ).removeBlocks( clientIds );
-		},
-	} ) ),
-	withSelect( ( select, { clientIds } ) => {
-		const {
-			getBlockRootClientId,
-			getTemplateLock,
-		} = select( 'core/editor' );
-
-		return {
-			isLocked: some( castArray( clientIds ), ( clientId ) => {
-				const rootClientId = getBlockRootClientId( clientId );
-				const templateLock = getTemplateLock( rootClientId );
-				return templateLock === 'all';
-			} ),
-		};
-	} ),
-)( BlockRemoveButton );
