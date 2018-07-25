@@ -1,22 +1,10 @@
 /**
- * External dependencies
- */
-import { every } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { IconButton } from '@wordpress/components';
-import { compose } from '@wordpress/compose';
-import { withSelect } from '@wordpress/data';
-import { hasBlockSupport } from '@wordpress/blocks';
 
-export function BlockDuplicateButton( { blocks, onDuplicate, isLocked, small = false, role, ...props } ) {
-	const canDuplicate = every( blocks, ( block ) => {
-		return hasBlockSupport( block.name, 'multiple', true );
-	} );
-
+export default function BlockDuplicateButton( { canDuplicate, isLocked, onDuplicate, small = false, role, ...props } ) {
 	if ( isLocked || ! canDuplicate ) {
 		return null;
 	}
@@ -36,17 +24,3 @@ export function BlockDuplicateButton( { blocks, onDuplicate, isLocked, small = f
 		</IconButton>
 	);
 }
-
-export default compose(
-	withSelect( ( select, { clientIds, rootClientId } ) => {
-		const {
-			getBlocksByClientId,
-			getTemplateLock,
-		} = select( 'core/editor' );
-
-		return {
-			blocks: getBlocksByClientId( clientIds ),
-			isLocked: !! getTemplateLock( rootClientId ),
-		};
-	} ),
-)( BlockDuplicateButton );

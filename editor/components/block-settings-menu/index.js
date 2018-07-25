@@ -59,6 +59,8 @@ export class BlockSettingsMenu extends Component {
 			rootClientId,
 			isHidden,
 			onDuplicate,
+			canDuplicate,
+			isLocked,
 			shortcuts,
 		} = this.props;
 		const { isFocused } = this.state;
@@ -128,6 +130,8 @@ export class BlockSettingsMenu extends Component {
 								rootClientId={ rootClientId }
 								role="menuitem"
 								onDuplicate={ onDuplicate }
+								canDuplicate={ canDuplicate }
+								isLocked={ isLocked }
 								shortcut={ shortcuts.duplicate.display }
 							/>
 							{ count === 1 && (

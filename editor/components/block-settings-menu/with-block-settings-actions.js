@@ -26,19 +26,22 @@ const withBlockSettingsActions = compose( [
 			getTemplateLock,
 		} = select( 'core/editor' );
 
+		const blocks = getBlocksByClientId( clientIds );
+
+		const canDuplicate = every( blocks, ( block ) => {
+			return hasBlockSupport( block.name, 'multiple', true );
+		} );
+
 		return {
-			blocks: getBlocksByClientId( clientIds ),
 			index: getBlockIndex( last( castArray( clientIds ) ), rootClientId ),
 			isLocked: !! getTemplateLock( rootClientId ),
+			blocks,
+			canDuplicate,
 			shortcuts,
 		};
 	} ),
-	withDispatch( ( dispatch, { blocks, index, isLocked, rootClientId } ) => ( {
+	withDispatch( ( dispatch, { blocks, index, isLocked, canDuplicate, rootClientId } ) => ( {
 		onDuplicate() {
-			const canDuplicate = every( blocks, ( block ) => {
-				return hasBlockSupport( block.name, 'multiple', true );
-			} );
-
 			if ( isLocked || ! canDuplicate ) {
 				return;
 			}
