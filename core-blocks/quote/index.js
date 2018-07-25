@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { castArray, get, isString, omit } from 'lodash';
+import { omit } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -22,11 +22,9 @@ import './style.scss';
 import './editor.scss';
 import './theme.scss';
 
-const toRichTextValue = ( value ) => value.map( ( ( subValue ) => subValue.children ) );
-
 const blockAttributes = {
 	value: {
-		type: 'object',
+		type: 'array',
 		source: 'rich-text',
 		selector: 'blockquote',
 		multiline: 'p',
@@ -105,16 +103,11 @@ export const settings = {
 				type: 'block',
 				blocks: [ 'core/paragraph' ],
 				transform: ( { value, citation } ) => {
-					// transforming an empty quote
-					if ( ( ! value || ! value.length ) && ! citation ) {
-						return createBlock( 'core/paragraph' );
+					if ( ! RichText.isEmpty( citation ) ) {
+						value.push( citation );
 					}
-					// transforming a quote with content
-					return ( value || [] ).map( ( item ) => createBlock( 'core/paragraph', {
-						content: [ get( item, [ 'children', 'props', 'children' ], '' ) ],
-					} ) ).concat( citation ? createBlock( 'core/paragraph', {
-						content: citation,
-					} ) : [] );
+
+					return value.map( ( content ) => createBlock( 'core/paragraph', { content } ) );
 				},
 			},
 			{
@@ -123,39 +116,22 @@ export const settings = {
 				transform: ( { value, citation, ...attrs } ) => {
 					// if no text content exist just transform the quote into an heading block
 					// using citation as the content, it may be empty creating an empty heading block.
-					if ( ( ! value || ! value.length ) ) {
+					if ( RichText.isEmpty( value ) ) {
 						return createBlock( 'core/heading', {
 							content: citation,
 						} );
 					}
 
-					const firstValue = get( value, [ 0, 'children' ] );
-					const headingContent = castArray( isString( firstValue ) ?
-						firstValue :
-						get( firstValue, [ 'props', 'children' ], '' )
-					);
-
-					// if the quote content just contains a paragraph and no citation exist
-					// convert the quote content into and heading block.
-					if ( ! citation && value.length === 1 ) {
-						return createBlock( 'core/heading', {
-							content: headingContent,
-						} );
-					}
-
-					// In the normal case convert the first paragraph of quote into an heading
-					// and create a new quote block equal tl what we had excluding the first paragraph
-					const heading = createBlock( 'core/heading', {
-						content: headingContent,
-					} );
-
-					const quote = createBlock( 'core/quote', {
-						...attrs,
-						citation,
-						value: value.slice( 1 ),
-					} );
-
-					return [ heading, quote ];
+					return [
+						createBlock( 'core/heading', {
+							content: value[ 0 ],
+						} ),
+						createBlock( 'core/quote', {
+							...attrs,
+							citation,
+							value: value.slice( 1 ),
+						} ),
+					];
 				},
 			},
 		],
@@ -251,7 +227,7 @@ export const settings = {
 						className={ style === 2 ? 'is-large' : '' }
 						style={ { textAlign: align ? align : null } }
 					>
-						<RichText.Content value={ toRichTextValue( value ) } />
+						<RichText.Content value={ value } />
 						{ ! RichText.isEmpty( citation ) && <RichText.Content tagName="cite" value={ citation } /> }
 					</blockquote>
 				);
@@ -279,7 +255,7 @@ export const settings = {
 						className={ `blocks-quote-style-${ style }` }
 						style={ { textAlign: align ? align : null } }
 					>
-						<RichText.Content value={ toRichTextValue( value ) } />
+						<RichText.Content value={ value } />
 						{ ! RichText.isEmpty( citation ) && <RichText.Content tagName="footer" value={ citation } /> }
 					</blockquote>
 				);

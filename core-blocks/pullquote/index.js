@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -18,11 +13,9 @@ import './editor.scss';
 import './style.scss';
 import './theme.scss';
 
-const toRichTextValue = ( value ) => map( value, ( ( subValue ) => subValue.children ) );
-
 const blockAttributes = {
 	value: {
-		type: 'object',
+		type: 'array',
 		source: 'rich-text',
 		selector: 'blockquote',
 		multiline: 'p',
@@ -59,7 +52,7 @@ export const settings = {
 			<blockquote className={ className }>
 				<RichText
 					multiline="p"
-					value={ toRichTextValue( value ) }
+					value={ value }
 					onChange={
 						( nextValue ) => setAttributes( {
 							value: nextValue,

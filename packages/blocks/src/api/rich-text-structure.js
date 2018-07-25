@@ -226,6 +226,10 @@ export function apply( value, current, multiline ) {
 		current.removeChild( current.childNodes[ i ] );
 	}
 
+	if ( ! selection.startPath.length ) {
+		return;
+	}
+
 	const { node: startContainer, offset: startOffset } = getNodeByPath( current, selection.startPath );
 	const { node: endContainer, offset: endOffset } = getNodeByPath( current, selection.endPath );
 

@@ -60,6 +60,12 @@ const TINYMCE_ZWSP = '\uFEFF';
 const DEFAULT_FORMATS = [ 'bold', 'italic', 'strikethrough', 'link', 'code' ];
 
 const { isEmpty } = richTextStructure;
+const settings = {
+	removeNodeMatch: ( node ) => node.getAttribute( 'data-mce-bogus' ) === 'all',
+	unwrapNodeMatch: ( node ) => !! node.getAttribute( 'data-mce-bogus' ),
+	removeAttributeMatch: ( attribute ) => attribute.indexOf( 'data-mce-' ) === 0,
+	filterString: ( string ) => string.replace( '\uFEFF', '' ),
+};
 
 export class RichText extends Component {
 	constructor() {
@@ -95,12 +101,12 @@ export class RichText extends Component {
 	 *
 	 * Allows passing in settings which will be overwritten.
 	 *
-	 * @param {Object} settings The settings to overwrite.
+	 * @param {Object} mceSettings The settings to overwrite.
 	 * @return {Object} The settings for this block.
 	 */
-	getSettings( settings ) {
+	getSettings( mceSettings ) {
 		return ( this.props.getSettings || identity )( {
-			...settings,
+			...mceSettings,
 			forced_root_block: this.props.multiline || false,
 			// Allow TinyMCE to keep one undo level for comparing changes.
 			// Prevent it otherwise from accumulating any history.
@@ -227,7 +233,7 @@ export class RichText extends Component {
 				mode: 'BLOCKS',
 				tagName: this.props.tagName,
 			} );
-			const shouldReplace = this.props.onReplace && this.isEmpty();
+			const shouldReplace = this.props.onReplace && isEmpty( this.props.value );
 
 			// Allows us to ask for this information when we get a report.
 			window.console.log( 'Received item:\n\n', file );
@@ -259,6 +265,8 @@ export class RichText extends Component {
 	 *                                     by TinyMCE.
 	 */
 	onPastePreProcess( event ) {
+		const { value } = this.props;
+		const { selection } = this.state;
 		const HTML = this.isPlainTextPaste ? '' : event.content;
 
 		event.preventDefault();
@@ -275,9 +283,14 @@ export class RichText extends Component {
 
 			// The pasted text is a link, and the selected text is not.
 			if ( linkRegExp.test( pastedText ) && ! linkRegExp.test( selectedText ) ) {
-				this.editor.execCommand( 'mceInsertLink', false, {
-					href: this.editor.dom.decode( pastedText ),
+				const record = richTextStructure.applyFormat( { value, selection }, {
+					type: 'a',
+					attributes: {
+						href: this.editor.dom.decode( pastedText ),
+					},
 				} );
+
+				this.onChange( record );
 
 				// Allows us to ask for this information when we get a report.
 				window.console.log( 'Created link:\n\n', pastedText );
@@ -286,7 +299,7 @@ export class RichText extends Component {
 			}
 		}
 
-		const shouldReplace = this.props.onReplace && this.isEmpty();
+		const shouldReplace = this.props.onReplace && isEmpty( this.props.value );
 
 		let mode = 'INLINE';
 
@@ -344,40 +357,37 @@ export class RichText extends Component {
 	}
 
 	/**
-	 * Handles any case where the content of the TinyMCE instance has changed.
+	 * Handles the input event and transformations on the new content.
 	 */
-
 	onInput() {
 		const { multiline } = this.props;
 		const rootNode = this.editor.getBody();
 		const range = this.editor.selection.getRng();
-		const record = richTextStructure.createWithSelection( rootNode, range, multiline );
+		let record = richTextStructure.createWithSelection( rootNode, range, multiline, settings );
 		const transformed = this.patterns.reduce( ( accu, transform ) => transform( accu ), record );
 
 		if ( record !== transformed ) {
 			richTextStructure.apply( transformed, this.editor.getBody(), multiline );
-			this.savedContent = transformed.value;
-		} else {
-			this.savedContent = record.value;
+			record = transformed;
 		}
 
-		this.props.onChange( this.savedContent );
+		this.savedContent = record.value;
+		this.props.onChange( record.value );
 	}
 
 	onChange( record ) {
 		const { multiline } = this.props;
+		const rootNode = this.editor.getBody();
 
 		if ( ! record ) {
-			const rootNode = this.editor.getBody();
 			const range = this.editor.selection.getRng();
-
-			record = richTextStructure.createWithSelection( rootNode, range, multiline );
+			record = richTextStructure.createWithSelection( rootNode, range, multiline, settings );
 		} else {
-			richTextStructure.apply( record, this.editor.getBody(), multiline );
+			richTextStructure.apply( record, rootNode, multiline );
 		}
 
 		this.savedContent = record.value;
-		this.props.onChange( this.savedContent );
+		this.props.onChange( record.value );
 	}
 
 	onSelectionChange() {
@@ -387,9 +397,15 @@ export class RichText extends Component {
 			return;
 		}
 
-		const { multiline } = this.props;
 		const range = this.editor.selection.getRng();
-		const { selection } = richTextStructure.createWithSelection( rootNode, range, multiline );
+
+		// Ignore selection movement to paste bin.
+		if ( range.startContainer.parentNode.id === 'mcepastebin' ) {
+			return;
+		}
+
+		const { multiline } = this.props;
+		const { selection } = richTextStructure.createWithSelection( rootNode, range, multiline, settings );
 
 		this.setState( { selection } );
 	}
@@ -484,7 +500,7 @@ export class RichText extends Component {
 				this.props.onMerge( forward );
 			}
 
-			if ( this.props.onRemove && this.isEmpty() ) {
+			if ( this.props.onRemove && isEmpty( this.props.value ) ) {
 				this.props.onRemove( forward );
 			}
 
@@ -666,33 +682,20 @@ export class RichText extends Component {
 		}
 	}
 
-	setContent( content ) {
-		const { format, multiline } = this.props;
-
-		// If editor has focus while content is being set, save the selection
-		// and restore caret position after content is set.
-		let bookmark;
-		if ( this.editor.hasFocus() ) {
-			bookmark = this.editor.selection.getBookmark( 2, true );
-		}
-
-		this.savedContent = content;
-		this.editor.setContent( valueToString( content, multiline, format ) );
-
-		if ( bookmark ) {
-			this.editor.selection.moveToBookmark( bookmark );
-		}
-	}
-
 	componentDidUpdate( prevProps ) {
-		// The `savedContent` var allows us to avoid updating the content right after an `onChange` call
+		const { tagName, value, multiline } = this.props;
+		const { selection } = this.state;
+
 		if (
-			!! this.editor &&
-			this.props.tagName === prevProps.tagName &&
-			// this.props.value !== prevProps.value &&
-			this.props.value !== this.savedContent
+			this.editor &&
+			tagName === prevProps.tagName &&
+			value !== prevProps.value &&
+			value !== this.savedContent
 		) {
-			this.setContent( this.props.value );
+			richTextStructure.apply( {
+				value,
+				selection: this.editor.hasFocus() ? selection : undefined,
+			}, this.editor.getBody(), multiline );
 		}
 
 		if ( 'development' === process.env.NODE_ENV ) {
@@ -701,17 +704,6 @@ export class RichText extends Component {
 				console.error( 'Formatters passed via `formatters` prop will only be registered once. Formatters can be enabled/disabled via the `formattingControls` prop.' );
 			}
 		}
-	}
-
-	/**
-	 * Returns true if the field is currently empty, or false otherwise.
-	 *
-	 * @param {Array} value Content to check.
-	 *
-	 * @return {boolean} Whether field is empty.
-	 */
-	isEmpty() {
-		return isEmpty( this.props.value );
 	}
 
 	render() {
@@ -739,7 +731,7 @@ export class RichText extends Component {
 		// changes, we unmount and destroy the previous TinyMCE element, then
 		// mount and initialize a new child element in its place.
 		const key = [ 'editor', Tagname ].join();
-		const isPlaceholderVisible = placeholder && ( ! isSelected || keepPlaceholderOnFocus ) && this.isEmpty();
+		const isPlaceholderVisible = placeholder && ( ! isSelected || keepPlaceholderOnFocus ) && isEmpty( value );
 		const classes = classnames( wrapperClassName, 'editor-rich-text' );
 
 		const formatToolbar = (

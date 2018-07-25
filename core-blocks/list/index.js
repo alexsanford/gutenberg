@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { find, compact, get, initial, last, isEmpty, omit } from 'lodash';
+import { find, omit } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -51,7 +51,7 @@ const schema = {
 		default: false,
 	},
 	values: {
-		type: 'object',
+		type: 'array',
 		source: 'rich-text',
 		selector: 'ol,ul',
 		multiline: 'li',
@@ -78,10 +78,8 @@ export const settings = {
 				isMultiBlock: true,
 				blocks: [ 'core/paragraph' ],
 				transform: ( blockAttributes ) => {
-					const items = blockAttributes.map( ( { content } ) => content );
-					const hasItems = ! items.every( isEmpty );
 					return createBlock( 'core/list', {
-						values: hasItems ? items.map( ( content, index ) => <li key={ index }>{ content }</li> ) : [],
+						values: blockAttributes.map( ( { content } ) => content ),
 					} );
 				},
 			},
@@ -89,13 +87,12 @@ export const settings = {
 				type: 'block',
 				blocks: [ 'core/quote' ],
 				transform: ( { value, citation } ) => {
-					const items = value.map( ( p ) => get( p, [ 'children', 'props', 'children' ] ) );
-					if ( ! isEmpty( citation ) ) {
-						items.push( citation );
+					if ( ! RichText.isEmpty( citation ) ) {
+						value.push( citation );
 					}
-					const hasItems = ! items.every( isEmpty );
+
 					return createBlock( 'core/list', {
-						values: hasItems ? items.map( ( content, index ) => <li key={ index }>{ content }</li> ) : [],
+						values: value,
 					} );
 				},
 			},
@@ -141,20 +138,14 @@ export const settings = {
 				type: 'block',
 				blocks: [ 'core/paragraph' ],
 				transform: ( { values } ) =>
-					compact( values.map( ( value ) => get( value, [ 'props', 'children' ], null ) ) )
-						.map( ( content ) => createBlock( 'core/paragraph', {
-							content: [ content ],
-						} ) ),
+					values.map( ( content ) => createBlock( 'core/paragraph', { content } ) ),
 			},
 			{
 				type: 'block',
 				blocks: [ 'core/quote' ],
 				transform: ( { values } ) => {
 					return createBlock( 'core/quote', {
-						value: compact( ( values.length === 1 ? values : initial( values ) )
-							.map( ( value ) => get( value, [ 'props', 'children' ], null ) ) )
-							.map( ( children ) => ( { children: <p>{ children }</p> } ) ),
-						citation: ( values.length === 1 ? undefined : [ get( last( values ), [ 'props', 'children' ] ) ] ),
+						value: values,
 					} );
 				},
 			},
