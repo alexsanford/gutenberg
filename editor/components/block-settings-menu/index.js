@@ -17,6 +17,8 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import './style.scss';
+import withBlockSettingsActions from './with-block-settings-actions';
+import BlockSettingsKeyboardShortcuts from './keyboard-shortcuts';
 import BlockModeToggle from './block-mode-toggle';
 import BlockDuplicateButton from './block-duplicate-button';
 import BlockRemoveButton from './block-remove-button';
@@ -56,6 +58,8 @@ export class BlockSettingsMenu extends Component {
 			focus,
 			rootClientId,
 			isHidden,
+			onDuplicate,
+			shortcuts,
 		} = this.props;
 		const { isFocused } = this.state;
 		const blockClientIds = castArray( clientIds );
@@ -64,6 +68,10 @@ export class BlockSettingsMenu extends Component {
 
 		return (
 			<div className="editor-block-settings-menu">
+				<BlockSettingsKeyboardShortcuts
+					onDuplicate={ onDuplicate }
+					shortcuts={ shortcuts }
+				/>
 				<Dropdown
 					contentClassName="editor-block-settings-menu__popover"
 					position="bottom left"
@@ -119,6 +127,8 @@ export class BlockSettingsMenu extends Component {
 								clientIds={ clientIds }
 								rootClientId={ rootClientId }
 								role="menuitem"
+								onDuplicate={ onDuplicate }
+								shortcut={ shortcuts.duplicate.display }
 							/>
 							{ count === 1 && (
 								<SharedBlockConvertButton
@@ -149,6 +159,7 @@ export class BlockSettingsMenu extends Component {
 
 export default compose( [
 	withDeprecatedUniqueId,
+	withBlockSettingsActions,
 	withDispatch( ( dispatch ) => ( {
 		onSelect( clientId ) {
 			dispatch( 'core/editor' ).selectBlock( clientId );
