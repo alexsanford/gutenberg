@@ -7,29 +7,20 @@ exports[`core/button block edit matches snapshot 1`] = `
   <div
     class="editor-rich-text"
   >
-    <div>
-      <div>
-        <div
-          class="components-autocomplete"
-        >
-          <span
-            aria-autocomplete="list"
-            aria-expanded="false"
-            aria-label="Add text…"
-            aria-multiline="true"
-            class="wp-block-button__link editor-rich-text__tinymce"
-            contenteditable="true"
-            data-is-placeholder-visible="true"
-            role="textbox"
-          />
-          <span
-            class="editor-rich-text__tinymce wp-block-button__link"
-          >
-            Add text…
-          </span>
-        </div>
-      </div>
-    </div>
+    <span
+      aria-autocomplete="list"
+      aria-label="Add text…"
+      aria-multiline="true"
+      class="wp-block-button__link editor-rich-text__tinymce"
+      contenteditable="true"
+      data-is-placeholder-visible="true"
+      role="textbox"
+    />
+    <span
+      class="editor-rich-text__tinymce wp-block-button__link"
+    >
+      Add text…
+    </span>
   </div>
 </span>
 `;

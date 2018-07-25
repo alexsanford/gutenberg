@@ -65,11 +65,25 @@ export const settings = {
 	category: 'formatting',
 
 	attributes: {
-		content: {
-			type: 'object',
-			source: 'rich-text',
-			selector: 'table',
-			multiline: [ 'th', 'td' ],
+		rows: {
+			type: 'array',
+			default: [],
+			source: 'query',
+			selector: 'tr',
+			query: {
+				cells: {
+					type: 'array',
+					default: [],
+					source: 'query',
+					selector: 'th,tr',
+					query: {
+						cell: {
+							type: 'object',
+							source: 'rich-text',
+						},
+					},
+				},
+			},
 		},
 		hasFixedLayout: {
 			type: 'boolean',
