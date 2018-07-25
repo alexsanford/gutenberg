@@ -11,6 +11,11 @@ import { IconButton, withSpokenMessages } from '@wordpress/components';
 import { withSelect, withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
 
+/**
+ * Internal dependencies
+ */
+import shortcuts from '../../keyboard-shortcuts';
+
 export function BlockInspectorButton( {
 	areAdvancedSettingsOpened,
 	closeSidebar,
@@ -37,6 +42,7 @@ export function BlockInspectorButton( {
 			icon="admin-generic"
 			label={ small ? label : undefined }
 			role={ role }
+			shortcut={ shortcuts.toggleSidebar.label }
 		>
 			{ ! small && label }
 		</IconButton>
