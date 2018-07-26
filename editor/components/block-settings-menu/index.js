@@ -25,6 +25,7 @@ import SharedBlockDeleteButton from './shared-block-delete-button';
 import BlockHTMLConvertButton from './block-html-convert-button';
 import BlockUnknownConvertButton from './block-unknown-convert-button';
 import _BlockSettingsMenuFirstItem from './block-settings-menu-first-item';
+import _BlockSettingsMenuPluginsExtension from './block-settings-menu-plugins-extension';
 import withDeprecatedUniqueId from '../with-deprecated-unique-id';
 
 export class BlockSettingsMenu extends Component {
@@ -56,7 +57,6 @@ export class BlockSettingsMenu extends Component {
 			focus,
 			rootClientId,
 			isHidden,
-			PluginExtension,
 		} = this.props;
 		const { isFocused } = this.state;
 		const blockClientIds = castArray( clientIds );
@@ -128,7 +128,7 @@ export class BlockSettingsMenu extends Component {
 									itemsRole="menuitem"
 								/>
 							) }
-							{ PluginExtension && ( <PluginExtension fillProps={ { clientIds, onClose } } /> ) }
+							<_BlockSettingsMenuPluginsExtension.Slot fillProps={ { clientIds, onClose } } />
 							<div className="editor-block-settings-menu__separator" />
 							{ count === 1 && (
 								<SharedBlockDeleteButton
