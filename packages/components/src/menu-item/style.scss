@@ -33,13 +33,11 @@
 	// Colorize plugin icons to ensure contrast and cohesion, but allow plugin developers to override.
 	svg,
 	svg * {
-		stroke: $dark-gray-500;
 		fill: $dark-gray-500;
 	}
 
 	&:hover svg,
 	&:hover svg * {
-		stroke: $dark-gray-900 !important;
 		fill: $dark-gray-900 !important;
 	}
 }
