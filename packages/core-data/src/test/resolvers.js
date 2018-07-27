@@ -6,28 +6,10 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { getCategories, getEntityRecord, getEntityRecords } from '../resolvers';
-import { receiveTerms, receiveEntityRecords, addEntities } from '../actions';
+import { getEntityRecord, getEntityRecords } from '../resolvers';
+import { receiveEntityRecords, addEntities } from '../actions';
 
 jest.mock( '@wordpress/api-fetch' );
-
-describe( 'getCategories', () => {
-	const CATEGORIES = [ { id: 1 } ];
-
-	beforeAll( () => {
-		apiFetch.mockImplementation( ( options ) => {
-			if ( options.path === '/wp/v2/categories?per_page=-1' ) {
-				return Promise.resolve( CATEGORIES );
-			}
-		} );
-	} );
-
-	it( 'yields with requested terms', async () => {
-		const fulfillment = getCategories();
-		const received = ( await fulfillment.next() ).value;
-		expect( received ).toEqual( receiveTerms( 'categories', CATEGORIES ) );
-	} );
-} );
 
 describe( 'getEntityRecord', () => {
 	const POST_TYPE = { slug: 'post' };

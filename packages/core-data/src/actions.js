@@ -4,23 +4,6 @@
 import { castArray } from 'lodash';
 
 /**
- * Returns an action object used in signalling that terms have been received
- * for a given taxonomy.
- *
- * @param {string}   taxonomy Taxonomy name.
- * @param {Object[]} terms    Terms received.
- *
- * @return {Object} Action object.
- */
-export function receiveTerms( taxonomy, terms ) {
-	return {
-		type: 'RECEIVE_TERMS',
-		taxonomy,
-		terms,
-	};
-}
-
-/**
  * Returns an action object used in signalling that authors have been received.
  *
  * @param {string}       queryID Query ID.

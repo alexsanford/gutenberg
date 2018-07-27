@@ -12,21 +12,11 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import {
-	receiveTerms,
 	receiveUserQuery,
 	receiveEntityRecords,
 	receiveThemeSupportsFromIndex,
 } from './actions';
 import { getKindEntities } from './entities';
-
-/**
- * Requests categories from the REST API, yielding action objects on request
- * progress.
- */
-export async function* getCategories() {
-	const categories = await apiFetch( { path: '/wp/v2/categories?per_page=-1' } );
-	yield receiveTerms( 'categories', categories );
-}
 
 /**
  * Requests authors from the REST API.

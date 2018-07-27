@@ -14,29 +14,6 @@ import { combineReducers } from '@wordpress/data';
 import { defaultEntities } from './entities';
 
 /**
- * Reducer managing terms state. Keyed by taxonomy slug, the value is either
- * undefined (if no request has been made for given taxonomy), null (if a
- * request is in-flight for given taxonomy), or the array of terms for the
- * taxonomy.
- *
- * @param {Object} state  Current state.
- * @param {Object} action Dispatched action.
- *
- * @return {Object} Updated state.
- */
-export function terms( state = {}, action ) {
-	switch ( action.type ) {
-		case 'RECEIVE_TERMS':
-			return {
-				...state,
-				[ action.taxonomy ]: action.terms,
-			};
-	}
-
-	return state;
-}
-
-/**
  * Reducer managing authors state. Keyed by id.
  *
  * @param {Object} state  Current state.
@@ -57,23 +34,6 @@ export function users( state = { byId: {}, queries: {} }, action ) {
 					[ action.queryID ]: map( action.users, ( user ) => user.id ),
 				},
 			};
-	}
-
-	return state;
-}
-
-/**
- * Reducer managing taxonomies.
- *
- * @param {Object} state  Current state.
- * @param {Object} action Dispatched action.
- *
- * @return {Object} Updated state.
- */
-export function taxonomies( state = [], action ) {
-	switch ( action.type ) {
-		case 'RECEIVE_TAXONOMIES':
-			return action.taxonomies;
 	}
 
 	return state;
@@ -202,9 +162,7 @@ export const entities = ( state = {}, action ) => {
 };
 
 export default combineReducers( {
-	terms,
 	users,
-	taxonomies,
 	themeSupports,
 	entities,
 } );

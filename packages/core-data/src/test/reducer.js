@@ -7,28 +7,7 @@ import { filter } from 'lodash';
 /**
  * Internal dependencies
  */
-import { terms, entities } from '../reducer';
-
-describe( 'terms()', () => {
-	it( 'returns an empty object by default', () => {
-		const state = terms( undefined, {} );
-
-		expect( state ).toEqual( {} );
-	} );
-
-	it( 'returns with received terms', () => {
-		const originalState = deepFreeze( {} );
-		const state = terms( originalState, {
-			type: 'RECEIVE_TERMS',
-			taxonomy: 'categories',
-			terms: [ { id: 1 } ],
-		} );
-
-		expect( state ).toEqual( {
-			categories: [ { id: 1 } ],
-		} );
-	} );
-} );
+import { entities } from '../reducer';
 
 describe( 'entities', () => {
 	it( 'returns the default state for all defined entities', () => {
