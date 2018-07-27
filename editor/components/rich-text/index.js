@@ -32,6 +32,7 @@ import { withInstanceId, withSafeTimeout, compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import './style.scss';
+import Autocomplete from '../autocomplete';
 import BlockFormatControls from '../block-format-controls';
 import FormatToolbar from './format-toolbar';
 import TinyMCE from './tinymce';
@@ -720,11 +721,12 @@ export class RichText extends Component {
 			keepPlaceholderOnFocus = false,
 			isSelected,
 			formatters,
+			autocompleters,
 			format,
 		} = this.props;
 
 		const { selection } = this.state;
-
+		const record = { value, selection };
 		const ariaProps = pickAriaProps( this.props );
 
 		// Generating a key that includes `tagName` ensures that if the tag
@@ -736,7 +738,7 @@ export class RichText extends Component {
 
 		const formatToolbar = (
 			<FormatToolbar
-				record={ { value, selection } }
+				record={ record }
 				onChange={ this.onChange }
 				enabledControls={ formattingControls }
 				customControls={ formatters }
@@ -765,30 +767,44 @@ export class RichText extends Component {
 					/>
 				}
 
-				<TinyMCE
-					tagName={ Tagname }
-					getSettings={ this.getSettings }
-					onSetup={ this.onSetup }
-					style={ style }
-					defaultValue={ value }
-					format={ format }
-					multiline={ MultilineTag }
-					isPlaceholderVisible={ isPlaceholderVisible }
-					aria-label={ placeholder }
-					aria-autocomplete="list"
-					{ ...ariaProps }
-					className={ className }
-					key={ key }
-				/>
-				{ isPlaceholderVisible &&
-					<Tagname
-						className={ classnames( 'editor-rich-text__tinymce', className ) }
-						style={ style }
-					>
-						{ MultilineTag ? <MultilineTag>{ placeholder }</MultilineTag> : placeholder }
-					</Tagname>
-				}
-				{ isSelected && <Slot name="RichText.Siblings" /> }
+				<Autocomplete
+					onReplace={ this.props.onReplace }
+					completers={ autocompleters }
+					record={ record }
+					onChange={ this.onChange }
+				>
+					{ ( { isExpanded, listBoxId, activeId } ) => (
+						<Fragment>
+							<TinyMCE
+								tagName={ Tagname }
+								getSettings={ this.getSettings }
+								onSetup={ this.onSetup }
+								style={ style }
+								defaultValue={ value }
+								format={ format }
+								isPlaceholderVisible={ isPlaceholderVisible }
+								aria-label={ placeholder }
+								aria-autocomplete="list"
+								aria-expanded={ isExpanded }
+								aria-owns={ listBoxId }
+								aria-activedescendant={ activeId }
+								{ ...ariaProps }
+								className={ className }
+								key={ key }
+								multiline={ MultilineTag }
+							/>
+							{ isPlaceholderVisible &&
+								<Tagname
+									className={ classnames( 'editor-rich-text__tinymce', className ) }
+									style={ style }
+								>
+									{ MultilineTag ? <MultilineTag>{ placeholder }</MultilineTag> : placeholder }
+								</Tagname>
+							}
+							{ isSelected && <Slot name="RichText.Siblings" /> }
+						</Fragment>
+					) }
+				</Autocomplete>
 			</div>
 		);
 	}

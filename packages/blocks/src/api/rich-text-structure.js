@@ -235,10 +235,10 @@ export function apply( value, current, multiline ) {
 
 	const sel = window.getSelection();
 	const range = current.ownerDocument.createRange();
-	const isCollapsed = startContainer === endContainer && startOffset === endOffset;
+	const collapsed = startContainer === endContainer && startOffset === endOffset;
 
 	if (
-		isCollapsed &&
+		collapsed &&
 		startOffset === 0 &&
 		startContainer.previousSibling &&
 		startContainer.previousSibling.nodeType === ELEMENT_NODE &&
@@ -462,8 +462,21 @@ export function splice( { formats, text, selection, value }, start, deleteCount,
 	return { formats, text };
 }
 
-export function getTextContent( { text, value } ) {
-	return text || value.text;
+export function getTextContent( { text, value, selection } ) {
+	if ( value !== undefined ) {
+		if ( Array.isArray( value ) ) {
+			if ( isCollapsed( { selection } ) ) {
+				const [ index ] = selection.start;
+				return value[ index ].text;
+			}
+
+			return;
+		}
+
+		return value.text;
+	}
+
+	return text;
 }
 
 export function applyFormat( { formats, text, value, selection }, format, start, end ) {
@@ -619,4 +632,21 @@ export function split( { text, formats, selection, value }, start, end ) {
 			text: text.slice( end ),
 		},
 	];
+}
+
+export function isCollapsed( { selection } ) {
+	const { start, end } = selection;
+
+	if ( ! start ) {
+		return;
+	}
+
+	if ( typeof start === 'number' ) {
+		return start === end;
+	}
+
+	const [ startRecord, startOffset ] = start;
+	const [ endRecord, endOffset ] = end;
+
+	return startRecord === endRecord && startOffset === endOffset;
 }

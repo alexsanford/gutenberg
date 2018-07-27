@@ -59,7 +59,17 @@ export function createBlockCompleter( {
 	return {
 		name: 'blocks',
 		className: 'editor-autocompleters__block',
-		triggerPrefix: '/',
+		test( string ) {
+			if ( string.indexOf( '/' ) !== 0 ) {
+				return false;
+			}
+
+			return /^\/\w*$/.test( string );
+		},
+		getQuery( string ) {
+			const match = string.match( /^\/(\w*)$/ );
+			return match && match[ 1 ];
+		},
 		options() {
 			const selectedBlockName = getSelectedBlockName();
 			return getInserterItems( getBlockInsertionParentClientId() ).filter(
