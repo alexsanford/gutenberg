@@ -40,7 +40,7 @@ function MenuItem( { children, className, icon, onClick, shortcut, isSelected = 
 				className={ className }
 				icon={ icon }
 				onClick={ onClick }
-				aria-pressed={ isSelected }
+				aria-checked={ isSelected }
 			>
 				{ children }
 				<Shortcut shortcut={ shortcut } />
@@ -52,7 +52,7 @@ function MenuItem( { children, className, icon, onClick, shortcut, isSelected = 
 		<Button
 			className={ className }
 			onClick={ onClick }
-			aria-pressed={ isSelected }
+			aria-checked={ isSelected }
 		>
 			{ children }
 			<Shortcut shortcut={ shortcut } />
