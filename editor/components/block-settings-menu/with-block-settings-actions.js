@@ -33,7 +33,7 @@ const withBlockSettingsActions = compose( [
 		const blocks = getBlocksByClientId( clientIds );
 
 		const canDuplicate = every( blocks, ( block ) => {
-			return hasBlockSupport( block.name, 'multiple', true );
+			return !! block && hasBlockSupport( block.name, 'multiple', true );
 		} );
 
 		return {
