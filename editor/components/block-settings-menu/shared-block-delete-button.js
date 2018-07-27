@@ -7,26 +7,25 @@ import { noop } from 'lodash';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { IconButton } from '@wordpress/components';
+import { MenuItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isSharedBlock } from '@wordpress/blocks';
 import { withSelect, withDispatch } from '@wordpress/data';
 
-export function SharedBlockDeleteButton( { sharedBlock, onDelete, itemsRole } ) {
+export function SharedBlockDeleteButton( { sharedBlock, onDelete } ) {
 	if ( ! sharedBlock ) {
 		return null;
 	}
 
 	return (
-		<IconButton
+		<MenuItem
 			className="editor-block-settings-menu__control"
 			icon="no"
 			disabled={ sharedBlock.isTemporary }
 			onClick={ () => onDelete( sharedBlock.id ) }
-			role={ itemsRole }
 		>
 			{ __( 'Delete Shared Block' ) }
-		</IconButton>
+		</MenuItem>
 	);
 }
 

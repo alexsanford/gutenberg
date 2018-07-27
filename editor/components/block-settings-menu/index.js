@@ -109,19 +109,16 @@ export class BlockSettingsMenu extends Component {
 								<BlockModeToggle
 									clientId={ firstBlockClientId }
 									onToggle={ onClose }
-									role="menuitem"
 								/>
 							) }
 							{ count === 1 && (
 								<BlockUnknownConvertButton
 									clientId={ firstBlockClientId }
-									role="menuitem"
 								/>
 							) }
 							{ count === 1 && (
 								<BlockHTMLConvertButton
 									clientId={ firstBlockClientId }
-									role="menuitem"
 								/>
 							) }
 							{ ! isLocked && canDuplicate && (
@@ -138,7 +135,6 @@ export class BlockSettingsMenu extends Component {
 								<SharedBlockConvertButton
 									clientId={ firstBlockClientId }
 									onToggle={ onClose }
-									itemsRole="menuitem"
 								/>
 							) }
 							<div className="editor-block-settings-menu__separator" />
@@ -146,7 +142,6 @@ export class BlockSettingsMenu extends Component {
 								<SharedBlockDeleteButton
 									clientId={ firstBlockClientId }
 									onToggle={ onClose }
-									itemsRole="menuitem"
 								/>
 							) }
 							{ ! isLocked && (

@@ -7,7 +7,7 @@ import { noop } from 'lodash';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { IconButton } from '@wordpress/components';
+import { MenuItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isSharedBlock } from '@wordpress/blocks';
 import { withSelect, withDispatch } from '@wordpress/data';
@@ -18,7 +18,6 @@ export function SharedBlockConvertButton( {
 	isStaticBlock,
 	onConvertToStatic,
 	onConvertToShared,
-	itemsRole,
 } ) {
 	if ( ! isVisible ) {
 		return null;
@@ -27,24 +26,22 @@ export function SharedBlockConvertButton( {
 	return (
 		<Fragment>
 			{ isStaticBlock && (
-				<IconButton
+				<MenuItem
 					className="editor-block-settings-menu__control"
 					icon="controls-repeat"
 					onClick={ onConvertToShared }
-					role={ itemsRole }
 				>
 					{ __( 'Convert to Shared Block' ) }
-				</IconButton>
+				</MenuItem>
 			) }
 			{ ! isStaticBlock && (
-				<IconButton
+				<MenuItem
 					className="editor-block-settings-menu__control"
 					icon="controls-repeat"
 					onClick={ onConvertToStatic }
-					role={ itemsRole }
 				>
 					{ __( 'Convert to Regular Block' ) }
-				</IconButton>
+				</MenuItem>
 			) }
 		</Fragment>
 	);
