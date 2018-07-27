@@ -9,7 +9,7 @@ import { castArray } from 'lodash';
  */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
-import { IconButton, Dropdown, NavigableMenu } from '@wordpress/components';
+import { IconButton, Dropdown, NavigableMenu, MenuItem } from '@wordpress/components';
 import { withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
 
@@ -20,8 +20,6 @@ import './style.scss';
 import withBlockSettingsActions from './with-block-settings-actions';
 import BlockSettingsKeyboardShortcuts from './keyboard-shortcuts';
 import BlockModeToggle from './block-mode-toggle';
-import BlockDuplicateButton from './block-duplicate-button';
-import BlockRemoveButton from './block-remove-button';
 import SharedBlockConvertButton from './shared-block-convert-button';
 import SharedBlockDeleteButton from './shared-block-delete-button';
 import BlockHTMLConvertButton from './block-html-convert-button';
@@ -56,7 +54,6 @@ export class BlockSettingsMenu extends Component {
 			clientIds,
 			onSelect,
 			focus,
-			rootClientId,
 			isHidden,
 			onDuplicate,
 			onRemove,
@@ -127,15 +124,16 @@ export class BlockSettingsMenu extends Component {
 									role="menuitem"
 								/>
 							) }
-							<BlockDuplicateButton
-								clientIds={ clientIds }
-								rootClientId={ rootClientId }
-								role="menuitem"
-								onDuplicate={ onDuplicate }
-								canDuplicate={ canDuplicate }
-								isLocked={ isLocked }
-								shortcut={ shortcuts.duplicate.display }
-							/>
+							{ ! isLocked && canDuplicate && (
+								<MenuItem
+									className="editor-block-settings-menu__control"
+									onClick={ onDuplicate }
+									icon="admin-page"
+									shortcut={ shortcuts.duplicate.display }
+								>
+									{ __( 'Duplicate' ) }
+								</MenuItem>
+							) }
 							{ count === 1 && (
 								<SharedBlockConvertButton
 									clientId={ firstBlockClientId }
@@ -151,12 +149,16 @@ export class BlockSettingsMenu extends Component {
 									itemsRole="menuitem"
 								/>
 							) }
-							<BlockRemoveButton
-								clientIds={ clientIds }
-								role="menuitem"
-								onRemove={ onRemove }
-								shortcut={ shortcuts.remove.display }
-							/>
+							{ ! isLocked && (
+								<MenuItem
+									className="editor-block-settings-menu__control"
+									onClick={ onRemove }
+									icon="trash"
+									shortcut={ shortcuts.remove.display }
+								>
+									{ __( 'Remove Block' ) }
+								</MenuItem>
+							) }
 						</NavigableMenu>
 					) }
 				/>
